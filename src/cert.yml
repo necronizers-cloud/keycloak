@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: photoatom-keycloak-cert
+  namespace: photoatom-keycloak-auth
+  labels:
+    app: kc
+spec:
+  secretName: photoatom-keycloak-cert
+  additionalOutputFormats:
+    - type: CombinedPEM
+  dnsNames:
+    - auth.photoatom.local
+  issuerRef:
+    name: photoatom-keycloak-ca-issuer
+    kind: Issuer
+    group: cert-manager.io
