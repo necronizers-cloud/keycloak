@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: photoatom-postgres-client-certs
+  namespace: photoatom-keycloak-auth
+  labels:
+    app: kc
+type: kubernetes.io/tls
+data:
+  tls.crt: |
+    TLS_CERT_HERE
+  tls.key: |
+    TLS_KEY_HERE
+  ca.crt: |
+    CA_CERT_HERE
