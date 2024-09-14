@@ -1,0 +1,70 @@
+name: Keycloak Cluster Deployment onto Self Hosted K3d Cluster
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/**
+      - bug/**
+    paths:
+      - certificates/**
+      - namespace/**
+      - secrets/**
+      - cluster/**
+  pull_request:
+    paths:
+      - certificates/**
+      - namespace/**
+      - secrets/**
+      - cluster/**
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - closed
+
+jobs:
+  namespace_deploy:
+    name: Keycloak Namespace Deployment onto Self Hosted K3d Cluster
+    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    with:
+      deployment_name: Keycloak Namespace
+      folder_path: namespace
+      runners: photoatom
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+  certificates_deploy:
+    needs: [namespace_deploy]
+    name: Keycloak Certificates Deployment onto Self Hosted K3d Cluster
+    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    with:
+      deployment_name: Keycloak Certificates
+      folder_path: certificates
+      runners: photoatom
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+  secrets_deploy:
+    needs: [certificates_deploy]
+    name: Keycloak Secrets Deployment onto Self Hosted K3d Cluster
+    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    with:
+      deployment_name: Keycloak Secrets
+      folder_path: secrets
+      runners: photoatom
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+  cluster_deploy:
+    needs: [secrets_deploy]
+    name: Keycloak Cluster Deployment onto Self Hosted K3d Cluster
+    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    with:
+      deployment_name: Keycloak Cluster
+      folder_path: cluster
+      runners: photoatom
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+

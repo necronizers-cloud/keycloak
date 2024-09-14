@@ -12,12 +12,11 @@ terraform {
 
   backend "kubernetes" {
     secret_suffix = "certificates.keycloak"
-    config_path   = "~/.kube/config"
   }
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+
 }
 
 provider "null" {
