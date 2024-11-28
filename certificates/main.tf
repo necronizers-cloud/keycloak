@@ -12,7 +12,12 @@ resource "kubernetes_manifest" "keycloak_ca" {
       }
     }
     "spec" = {
-      "isCA"       = true
+      "isCA" = true
+      "subject" = {
+        "organizations"       = ["photoatom"]
+        "countries"           = ["India"]
+        "organizationalUnits" = ["Keycloak"]
+      }
       "commonName" = "keycloak-ca"
       "secretName" = "keycloak-ca-tls"
       "duration"   = "70128h"
@@ -67,8 +72,23 @@ resource "kubernetes_manifest" "keycloak_certificate" {
     }
     "spec" = {
       "dnsNames" = [
-        "auth.photoatom.local"
+        "auth.photoatom.local",
+        "localhost",
+        "127.0.0.1",
+        "*.keycloak.svc.cluster.local",
+        "keycloak-cluster-service",
+        "keycloak-cluster-service.keycloak.svc.cluster.local",
+        "*.keycloak-cluster-service.keycloak.svc.cluster.local",
+        "keycloak-cluster-discovery",
+        "keycloak-cluster-discovery.keycloak.svc.cluster.local",
+        "*.keycloak-cluster-discovery.keycloak.svc.cluster.local",
       ]
+      "subject" = {
+        "organizations"       = ["photoatom"]
+        "countries"           = ["India"]
+        "organizationalUnits" = ["Keycloak"]
+      }
+      "commonName" = "keycloak"
       "secretName" = "keycloak-tls"
       "issuerRef" = {
         "name" = "${var.keycloak_issuer_name}"
