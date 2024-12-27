@@ -18,7 +18,7 @@ resource "kubernetes_manifest" "keycloak" {
           "name" = var.keycloak_database_credentials_name
         }
         "poolInitialSize" = 1
-        "poolMaxSize"     = 3
+        "poolMaxSize"     = 1
         "poolMinSize"     = 1
         "usernameSecret" = {
           "key"  = "username"
