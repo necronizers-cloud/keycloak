@@ -27,7 +27,7 @@ resource "kubernetes_manifest" "keycloak" {
         "vendor" = "postgres"
       }
       "hostname" = {
-        "hostname" = "${var.host_name}.${var.photoatom_domain}"
+        "hostname" = "${var.host_name}.${var.cloud_domain}"
       }
       "http" = {
         "tlsSecret" = "keycloak-tls"
@@ -109,11 +109,11 @@ resource "kubernetes_ingress_v1" "keycloak_ingress" {
   spec {
     ingress_class_name = "nginx"
     tls {
-      hosts       = ["${var.host_name}.${var.photoatom_domain}"]
+      hosts       = ["${var.host_name}.${var.cloud_domain}"]
       secret_name = "keycloak-ingress-tls"
     }
     rule {
-      host = "${var.host_name}.${var.photoatom_domain}"
+      host = "${var.host_name}.${var.cloud_domain}"
       http {
         path {
           path = "/"
