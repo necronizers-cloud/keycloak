@@ -29,11 +29,11 @@ on:
 jobs:
   namespace_deploy:
     name: Keycloak Namespace Deployment onto Self Hosted K3d Cluster
-    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
     with:
       deployment_name: Keycloak Namespace
       folder_path: namespace
-      runners: photoatom
+      runners: cloud
       post_apply_script: |
 
         # Deploy Keyclaok Operator in the keycloak namespace
@@ -51,11 +51,11 @@ jobs:
   certificates_deploy:
     needs: [namespace_deploy]
     name: Keycloak Certificates Deployment onto Self Hosted K3d Cluster
-    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
     with:
       deployment_name: Keycloak Certificates
       folder_path: certificates
-      runners: photoatom
+      runners: cloud
       post_apply_script: |
 
         # Wait for Keycloak Ingress Certificate to be ready
@@ -66,11 +66,11 @@ jobs:
   secrets_deploy:
     needs: [certificates_deploy]
     name: Keycloak Secrets Deployment onto Self Hosted K3d Cluster
-    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
     with:
       deployment_name: Keycloak Secrets
       folder_path: secrets
-      runners: photoatom
+      runners: cloud
       pre_plan_script: |
         kubectl get secret -n postgres keycloak-pg-cert -o json | jq -rc '.data."tls.key"' | base64 -d > tls.key
         openssl pkcs8 -topk8 -inform PEM -outform DER -in tls.key -out tls.pk8 -nocrypt
@@ -79,11 +79,11 @@ jobs:
   cluster_deploy:
     needs: [secrets_deploy]
     name: Keycloak Cluster Deployment onto Self Hosted K3d Cluster
-    uses: PhotoAtom/automations/.github/workflows/tofu-deploy.yml@main
+    uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
     with:
       deployment_name: Keycloak Cluster
       folder_path: cluster
-      runners: photoatom
+      runners: cloud
     secrets: inherit
       
 
