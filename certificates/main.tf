@@ -72,7 +72,7 @@ resource "kubernetes_manifest" "keycloak_certificate" {
     }
     "spec" = {
       "dnsNames" = [
-        "${var.host_name}.${var.photoatom_domain}",
+        "${var.host_name}.${var.cloud_domain}",
         "localhost",
         "127.0.0.1",
         "*.keycloak.svc.cluster.local",
@@ -185,7 +185,7 @@ resource "kubernetes_manifest" "keycloak_ingress_certificate" {
         "encoding"  = "PKCS1"
         "size"      = "2048"
       }
-      "dnsNames"   = ["${var.host_name}.${var.photoatom_domain}"]
+      "dnsNames"   = ["${var.host_name}.${var.cloud_domain}"]
       "secretName" = "keycloak-ingress-tls"
       "issuerRef" = {
         "name"  = "keycloak-public-issuer"
