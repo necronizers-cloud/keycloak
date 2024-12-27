@@ -40,7 +40,7 @@ variable "host_name" {
   description = "Host name to be used with MinIO Tenant Ingress"
 }
 
-variable "photoatom_domain" {
+variable "cloud_domain" {
   description = "Domain to be used for Ingress"
   default     = ""
   type        = string
