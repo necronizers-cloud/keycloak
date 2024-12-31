@@ -240,10 +240,10 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
               port   = "management"
               scheme = "HTTPS"
             }
-            period_seconds    = 10
-            success_threshold = 1
-            timeout_seconds   = 10
-
+            period_seconds        = 10
+            success_threshold     = 1
+            timeout_seconds       = 10
+            initial_delay_seconds = 90
           }
 
           readiness_probe {
@@ -253,9 +253,10 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
               port   = "management"
               scheme = "HTTPS"
             }
-            period_seconds    = 10
-            success_threshold = 1
-            timeout_seconds   = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            timeout_seconds       = 10
+            initial_delay_seconds = 90
           }
 
           liveness_probe {
@@ -265,9 +266,10 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
               port   = "management"
               scheme = "HTTPS"
             }
-            period_seconds    = 10
-            success_threshold = 1
-            timeout_seconds   = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            timeout_seconds       = 10
+            initial_delay_seconds = 90
           }
 
           resources {
