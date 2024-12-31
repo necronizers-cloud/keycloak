@@ -34,18 +34,6 @@ jobs:
       deployment_name: Keycloak Namespace
       folder_path: namespace
       runners: cloud
-      post_apply_script: |
-
-        # Deploy Keyclaok Operator in the keycloak namespace
-        echo "Deploying Keycloak Operator in the keycloak namespace..."
-
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/25.0.4/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/25.0.4/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/25.0.4/kubernetes/kubernetes.yml -n keycloak
-
-        # Sleep till operator is ready
-        echo "Sleeping till the operator is ready"
-        sleep 60
     secrets: inherit
       
   certificates_deploy:
@@ -76,14 +64,14 @@ jobs:
         openssl pkcs8 -topk8 -inform PEM -outform DER -in tls.key -out tls.pk8 -nocrypt
     secrets: inherit
       
-  cluster_deploy:
-    needs: [secrets_deploy]
-    name: Keycloak Cluster Deployment onto Self Hosted K3d Cluster
-    uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
-    with:
-      deployment_name: Keycloak Cluster
-      folder_path: cluster
-      runners: cloud
-    secrets: inherit
-      
+  # cluster_deploy:
+  #   needs: [secrets_deploy]
+  #   name: Keycloak Cluster Deployment onto Self Hosted K3d Cluster
+  #   uses: necronizers-cloud/automations/.github/workflows/tofu-deploy.yml@main
+  #   with:
+  #     deployment_name: Keycloak Cluster
+  #     folder_path: cluster
+  #     runners: cloud
+  #   secrets: inherit
+  #     
 
