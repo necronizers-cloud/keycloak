@@ -223,8 +223,8 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             for_each = var.keycloak_ports
             content {
               name           = port.value["name"]
-              container_port = pod.value["containerPort"]
-              protocol       = pod.value["protocol"]
+              container_port = port.value["containerPort"]
+              protocol       = port.value["protocol"]
             }
           }
 
