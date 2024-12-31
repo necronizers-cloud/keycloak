@@ -106,7 +106,8 @@ resource "kubernetes_service" "keycloak_discovery" {
       port        = 7800
       target_port = "discovery"
     }
-    type = "ClusterIP"
+    type       = "ClusterIP"
+    cluster_ip = "None"
   }
 }
 
