@@ -74,3 +74,31 @@ resource "kubernetes_secret" "keycloak_database_ssl_key" {
 
   type = "Opaque"
 }
+
+// Keycloak Credentials
+resource "random_password" "keycloak_password" {
+  length           = 16
+  lower            = true
+  numeric          = true
+  special          = true
+  override_special = "-_*/"
+  min_special      = 2
+}
+
+resource "kubernetes_secret" "keycloak_credentials" {
+  metadata {
+    name      = "keycloak-credentials"
+    namespace = var.namespace
+    labels = {
+      app       = "keycloak"
+      component = "secret"
+    }
+  }
+
+  data = {
+    KEYCLOAK_ADMIN          = "keycloak.admin"
+    KEYCLOAK_ADMIN_PASSWORD = random_password.keycloak_password.result
+  }
+
+  type = "Opaque"
+}
