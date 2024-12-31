@@ -151,7 +151,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
     }
   }
   spec {
-    replicas     = 1
+    replicas     = 2
     service_name = ""
 
     selector {
