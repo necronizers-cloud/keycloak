@@ -102,6 +102,7 @@ resource "kubernetes_service" "keycloak_discovery" {
     }
     session_affinity = "None"
     port {
+      name        = "discovery"
       port        = 7800
       target_port = "discovery"
     }
@@ -122,14 +123,17 @@ resource "kubernetes_service" "keycloak_service" {
     }
     session_affinity = "None"
     port {
+      name        = "http"
       port        = 8080
       target_port = "http"
     }
     port {
+      name        = "https"
       port        = 8443
       target_port = "https"
     }
     port {
+      name        = "management"
       port        = 9000
       target_port = "management"
     }
@@ -214,7 +218,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             value_from {
               secret_key_ref {
                 name = "keycloak-database-credentials"
-                key  = "passwod"
+                key  = "password"
               }
             }
           }
@@ -349,7 +353,7 @@ resource "kubernetes_ingress_v1" "keycloak_ingress" {
             service {
               name = "keycloak-cluster-service"
               port {
-                number = 8443
+                name = "https"
               }
             }
           }
