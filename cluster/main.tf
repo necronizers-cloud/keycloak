@@ -152,7 +152,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
     }
   }
   spec {
-    replicas     = 2
+    replicas     = 4
     service_name = ""
 
     selector {
@@ -177,7 +177,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
       spec {
         container {
           name  = "keycloak"
-          image = "quay.io/keycloak/keycloak:25.0.4"
+          image = "quay.io/keycloak/keycloak:26.0.7"
           args  = ["-Djgroups.dns.query=keycloak-discovery.keycloak", "--verbose", "start"]
 
           env {
