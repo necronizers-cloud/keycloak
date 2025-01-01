@@ -169,7 +169,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             period_seconds        = 10
             success_threshold     = 1
             timeout_seconds       = 10
-            initial_delay_seconds = 90
+            initial_delay_seconds = 60
           }
 
           readiness_probe {
@@ -182,7 +182,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             period_seconds        = 10
             success_threshold     = 1
             timeout_seconds       = 10
-            initial_delay_seconds = 90
+            initial_delay_seconds = 60
           }
 
           liveness_probe {
@@ -195,7 +195,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             period_seconds        = 10
             success_threshold     = 1
             timeout_seconds       = 10
-            initial_delay_seconds = 90
+            initial_delay_seconds = 60
           }
 
           // Resource limitations
