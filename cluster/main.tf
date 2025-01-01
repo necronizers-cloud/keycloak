@@ -95,7 +95,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
         container {
           name  = "keycloak"
           image = "quay.io/keycloak/keycloak:26.0.7"
-          args  = ["-Djgroups.dns.query=keycloak-discovery.keycloak", "--verbose", "start"]
+          args  = ["-Djgroups.dns.query=keycloak-discovery.keycloak", "--verbose", "start", "--import-realm"]
 
           // Environment Variables
           env {
@@ -230,6 +230,13 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             secret {
               secret_name = volume.value["secretName"]
             }
+          }
+        }
+
+        volume {
+          name = "cloud-realm-configuration"
+          config_map {
+            name = "cloud-realm-configuration"
           }
         }
 

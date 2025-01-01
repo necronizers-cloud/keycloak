@@ -165,8 +165,12 @@ variable "keycloak_volume_mounts" {
     {
       name      = "keycloak-postgresql-ssl-key"
       mountPath = "/mnt/certs/database/key"
-    }
+    },
 
+    {
+      name      = "cloud-realm-configuration"
+      mountPath = "/opt/keycloak/data/import"
+    }
   ]
 
   description = "Mounting secrets as volumes on Keycloak pods"
