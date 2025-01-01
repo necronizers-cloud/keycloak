@@ -74,3 +74,68 @@ resource "kubernetes_secret" "keycloak_database_ssl_key" {
 
   type = "Opaque"
 }
+
+// Keycloak Credentials
+resource "random_password" "keycloak_password" {
+  length           = 16
+  lower            = true
+  numeric          = true
+  special          = true
+  override_special = "-_*/"
+  min_special      = 2
+}
+
+resource "kubernetes_secret" "keycloak_credentials" {
+  metadata {
+    name      = "keycloak-credentials"
+    namespace = var.namespace
+    labels = {
+      app       = "keycloak"
+      component = "secret"
+    }
+  }
+
+  data = {
+    KC_BOOTSTRAP_ADMIN_USERNAME = "keycloak.admin"
+    KC_BOOTSTRAP_ADMIN_PASSWORD = random_password.keycloak_password.result
+  }
+
+  type = "Opaque"
+}
+
+// Keycloak Client Secrets
+resource "random_password" "tester_client_secret" {
+  length           = 16
+  lower            = true
+  numeric          = true
+  special          = true
+  override_special = "-_*/"
+  min_special      = 2
+}
+
+resource "random_password" "cloud_client_secret" {
+  length           = 16
+  lower            = true
+  numeric          = true
+  special          = true
+  override_special = "-_*/"
+  min_special      = 2
+}
+
+resource "kubernetes_secret" "keycloak_client_secrets" {
+  metadata {
+    name      = "keycloak-client-secrets"
+    namespace = var.namespace
+    labels = {
+      app       = "keycloak"
+      component = "secret"
+    }
+  }
+
+  data = {
+    TESTER_CLIENT_SECRET = random_password.tester_client_secret.result
+    CLOUD_CLIENT_SECRET  = random_password.cloud_client_secret.result
+  }
+
+  type = "Opaque"
+}
