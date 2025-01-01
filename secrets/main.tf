@@ -96,8 +96,8 @@ resource "kubernetes_secret" "keycloak_credentials" {
   }
 
   data = {
-    KEYCLOAK_ADMIN          = "keycloak.admin"
-    KEYCLOAK_ADMIN_PASSWORD = random_password.keycloak_password.result
+    KC_BOOTSTRAP_ADMIN_USERNAME = "keycloak.admin"
+    KC_BOOTSTRAP_ADMIN_PASSWORD = random_password.keycloak_password.result
   }
 
   type = "Opaque"
