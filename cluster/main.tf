@@ -1,94 +1,4 @@
-# resource "kubernetes_manifest" "keycloak" {
-#   manifest = {
-#     "apiVersion" = "k8s.keycloak.org/v2alpha1"
-#     "kind"       = "Keycloak"
-#     "metadata" = {
-#       "labels" = {
-#         "app"       = "keycloak"
-#         "component" = "cluster"
-#       }
-#       "name"      = var.cluster_name
-#       "namespace" = var.namespace
-#     }
-#     "spec" = {
-#       "db" = {
-#         "url" = "jdbc:postgresql://${var.postgres_cluster_name}-rw.${var.postgres_namespace}.svc/keycloak?ssl=true&sslmode=verify-ca&sslrootcert=/mnt/cert/ca.crt&sslcert=/mnt/cert/tls.crt&sslkey=/mnt/key/tls.pk8"
-#         "passwordSecret" = {
-#           "key"  = "password"
-#           "name" = var.keycloak_database_credentials_name
-#         }
-#         "poolInitialSize" = 1
-#         "poolMaxSize"     = 3
-#         "poolMinSize"     = 1
-#         "usernameSecret" = {
-#           "key"  = "username"
-#           "name" = var.keycloak_database_credentials_name
-#         }
-#         "vendor" = "postgres"
-#       }
-#       "hostname" = {
-#         "hostname" = "${var.host_name}.${var.cloud_domain}"
-#       }
-#       "http" = {
-#         "tlsSecret" = "keycloak-tls"
-#       }
-#       "ingress" = {
-#         "enabled" = false
-#       }
-#       "instances" = 1
-#       "resources" = {
-#         "limits" = {
-#           "cpu"    = "500m"
-#           "memory" = "1Gi"
-#         }
-#         "requests" = {
-#           "cpu"    = "500m"
-#           "memory" = "1Gi"
-#         }
-#       }
-#       "unsupported" = {
-#         "podTemplate" = {
-#           "spec" = {
-#             "securityContext" = {
-#               "fsGroup"   = 1000
-#               "runAsUser" = 1000
-#             }
-#             "containers" = [
-#               {
-#                 "volumeMounts" = [
-#                   {
-#                     "name"      = "keycloak-postgres-certificates"
-#                     "mountPath" = "/mnt/cert"
-#                   },
-#                   {
-#                     "name"      = "keycloak-postgres-keys"
-#                     "mountPath" = "/mnt/key"
-#                   }
-#                 ]
-#               }
-#             ]
-#             "volumes" = [
-#               {
-#                 "name" = "keycloak-postgres-certificates"
-#                 "secret" = {
-#                   "secretName" = "keycloak-postgresql-ssl-certificates"
-#                 }
-#               },
-#               {
-#                 "name" = "keycloak-postgres-keys"
-#                 "secret" = {
-#                   "secretName" = "keycloak-postgresql-ssl-key"
-#                 }
-#               }
-#             ]
-#           }
-#         }
-#       }
-#     }
-#   }
-# }
-#
-
+// Keycloak Discovery Service
 resource "kubernetes_service" "keycloak_discovery" {
   metadata {
     name      = "keycloak-discovery"
@@ -111,6 +21,7 @@ resource "kubernetes_service" "keycloak_discovery" {
   }
 }
 
+// Keycloak HTTP(S) and Management Service
 resource "kubernetes_service" "keycloak_service" {
   metadata {
     name      = "keycloak-cluster-service"
@@ -142,6 +53,7 @@ resource "kubernetes_service" "keycloak_service" {
   }
 }
 
+// Keycloak Stateful Set Cluster
 resource "kubernetes_stateful_set" "keycloak_cluster" {
   metadata {
     name      = "keycloak-cluster"
@@ -152,9 +64,10 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
     }
   }
   spec {
-    replicas     = 2
+    replicas     = 1
     service_name = ""
 
+    // Stateful Set Pod Selector
     selector {
       match_labels = {
 
@@ -164,22 +77,27 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
       }
     }
 
+    // Pod Template
     template {
+
+      // Pod Metadata
       metadata {
         labels = {
-
           app       = "keycloak"
           component = "pod"
-
         }
       }
 
+      // Pod Spec
       spec {
+
+        // Container Details
         container {
           name  = "keycloak"
           image = "quay.io/keycloak/keycloak:26.0.7"
           args  = ["-Djgroups.dns.query=keycloak-discovery.keycloak", "--verbose", "start"]
 
+          // Environment Variables
           env {
             name  = "KC_HOSTNAME"
             value = "${var.host_name}.${var.cloud_domain}"
@@ -196,6 +114,12 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
           env_from {
             secret_ref {
               name = "keycloak-credentials"
+            }
+          }
+
+          env_from {
+            secret_ref {
+              name = "keycloak-client-secrets"
             }
           }
 
@@ -224,6 +148,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             }
           }
 
+          // Port Mappings
           dynamic "port" {
             for_each = var.keycloak_ports
             content {
@@ -233,6 +158,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             }
           }
 
+          // Startup, Liveness and Readiness Probes
           startup_probe {
             failure_threshold = 3
             http_get {
@@ -272,6 +198,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             initial_delay_seconds = 90
           }
 
+          // Resource limitations
           resources {
             requests = {
               "cpu"    = "500m"
@@ -284,6 +211,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
             }
           }
 
+          // Volume mounts
           dynamic "volume_mount" {
             for_each = var.keycloak_volume_mounts
             content {
@@ -294,6 +222,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
 
         }
 
+        // Volumes
         dynamic "volume" {
           for_each = var.keycloak_volumes
           content {
@@ -323,6 +252,7 @@ resource "kubernetes_stateful_set" "keycloak_cluster" {
   depends_on = [kubernetes_service.keycloak_service, kubernetes_service.keycloak_discovery]
 }
 
+// Keycloak Ingress
 resource "kubernetes_ingress_v1" "keycloak_ingress" {
   metadata {
     name      = "keycloak-ingress"
